@@ -1,14 +1,21 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import 'reflect-metadata';
 
 import * as mongoose from 'mongoose';
 import { TimeStamps } from '@typegoose/typegoose/lib/defaultClasses';
-import { pre, getModelForClass, Prop, Ref, modelOptions } from '@typegoose/typegoose';
-import lib from './lib';
+import {
+  pre,
+  getModelForClass,
+  Prop,
+  Ref,
+  modelOptions,
+} from '@typegoose/typegoose';
+import lib from '../lib';
 
 import ObjectId = mongoose.Types.ObjectId;
 
 class Base extends TimeStamps {
-  @Prop({ required: true, default: () => (new ObjectId()).toString() })
+  @Prop({ required: true, default: () => new ObjectId().toString() })
   _id: string;
 }
 
@@ -60,8 +67,6 @@ export class User extends Base {
 @modelOptions({ schemaOptions: { validateBeforeSave: false } })
 export class Region extends Base {
   @Prop({ required: true, auto: true })
-  _id: string;
-
   @Prop({ required: true })
   name!: string;
 
