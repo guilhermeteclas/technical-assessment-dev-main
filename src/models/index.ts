@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import 'reflect-metadata';
 
 import * as mongoose from 'mongoose';
@@ -20,14 +19,24 @@ class Base extends TimeStamps {
 }
 
 @pre<User>('save', async function (next) {
-  const region = this as Omit<any, keyof User> & User;
+  const user = this as Omit<mongoose.Document, keyof User> & User;
 
-  if (region.isModified('coordinates')) {
-    region.address = await lib.getAddressFromCoordinates(region.coordinates);
-  } else if (region.isModified('address')) {
-    const { lat, lng } = await lib.getCoordinatesFromAddress(region.address);
+  // usuário pode fornecer endereço ou coordenadas. Haverá erro caso forneça ambos ou nenhum.
+  if (
+    (user.address != '' && user.coordinates.length) ||
+    (user.address == '' && !user.coordinates.length)
+  ) {
+    return next(
+      new Error('You must provide either "address" or "coordinates".'),
+    );
+  }
 
-    region.coordinates = [lng, lat];
+  // uso de serviço de geolocalização para resolver endereço ↔ coordenadas.
+  if (user.isModified('coordinates') && user.coordinates.length > 0) {
+    user.address = await lib.getAddressFromCoordinates(user.coordinates);
+  } else if (user.isModified('address') && user.address != '') {
+    const { lat, lng } = await lib.getCoordinatesFromAddress(user.address);
+    user.coordinates = [lat, lng];
   }
 
   next();
@@ -39,18 +48,18 @@ export class User extends Base {
   @Prop({ required: true })
   email!: string;
 
-  @Prop({ required: true })
-  address: string;
+  @Prop({ required: false })
+  address?: string;
 
-  @Prop({ required: true, type: () => [Number] })
-  coordinates: [number, number];
+  @Prop({ required: false, type: () => [Number] })
+  coordinates?: [number, number];
 
   @Prop({ required: true, default: [], ref: () => Region, type: () => String })
   regions: Ref<Region>[];
 }
 
 @pre<Region>('save', async function (next) {
-  const region = this as Omit<any, keyof Region> & Region;
+  const region = this as Omit<mongoose.Document, keyof Region> & Region;
 
   if (!region._id) {
     region._id = new ObjectId().toString();
