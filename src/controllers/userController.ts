@@ -33,7 +33,9 @@ export const getUserById = async (req: Request, res: Response) => {
     const user = await UserModel.findOne({ _id: id }).lean();
 
     if (!user) {
-      return res.status(STATUS.NOT_FOUND).json({ message: 'User not found.' });
+      return res
+        .status(STATUS.NOT_FOUND)
+        .json({ message: req.t('status.not-found') });
     }
 
     return res.json(user);
@@ -82,7 +84,9 @@ export const updateUser = async (req: Request, res: Response) => {
 
     const user = await UserModel.findOne({ _id: id });
     if (!user) {
-      return res.status(STATUS.NOT_FOUND).json({ message: 'User not found' });
+      return res
+        .status(STATUS.NOT_FOUND)
+        .json({ message: req.t('status.not-found') });
     }
 
     user.name = update?.name;
@@ -114,15 +118,15 @@ export const deleteUser = async (req: Request, res: Response) => {
     const user = await UserModel.findOne({ _id: id });
 
     if (!user) {
-      return res.status(STATUS.NOT_FOUND).json({ message: 'User not found' });
+      return res
+        .status(STATUS.NOT_FOUND)
+        .json({ message: req.t('status.not-found') });
     }
 
     await user.deleteOne();
     await session.commitTransaction();
     console.log('Commit OK');
-    return res
-      .status(STATUS.OK)
-      .json({ message: 'User deleted from database.' });
+    return res.status(STATUS.OK).json({ message: req.t('status.OK') });
   } catch (error) {
     await session.abortTransaction();
     return res

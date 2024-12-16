@@ -37,7 +37,7 @@ router.get('/nearby', getNearbyRegions);
 router.get('/withinPoint', getRegionsWithinPoint);
 
 router.get('/', async (req, res) => {
-  return res.status(STATUS.OK).send('✅ OZtest is running ');
+  return res.status(STATUS.OK).send(req.t('running'));
 });
 
 export default router;

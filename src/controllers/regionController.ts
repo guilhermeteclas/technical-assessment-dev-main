@@ -35,7 +35,7 @@ export const getRegionById = async (req: Request, res: Response) => {
     if (!region) {
       return res
         .status(STATUS.NOT_FOUND)
-        .json({ message: 'Region not found.' });
+        .json({ message: req.t('status.not-found') });
     }
 
     return res.json(region);
@@ -55,7 +55,9 @@ export const createRegion = async (req: Request, res: Response) => {
 
     const user = await UserModel.findById(userId);
     if (!user) {
-      return res.status(STATUS.NOT_FOUND).json({ message: 'User not found.' });
+      return res
+        .status(STATUS.NOT_FOUND)
+        .json({ message: req.t('status.not-found') });
     }
 
     const newRegion = new RegionModel({
@@ -91,7 +93,7 @@ export const updateRegion = async (req: Request, res: Response) => {
     if (!region) {
       return res
         .status(STATUS.NOT_FOUND)
-        .json({ message: 'Region not found.' });
+        .json({ message: req.t('status.not-found') });
     }
 
     region.name = update?.name || region.name;
@@ -123,16 +125,14 @@ export const deleteRegion = async (req: Request, res: Response) => {
     if (!region) {
       return res
         .status(STATUS.NOT_FOUND)
-        .json({ message: 'Region not found.' });
+        .json({ message: req.t('status.not-found') });
     }
 
     await region.deleteOne();
     await session.commitTransaction();
     console.log('Commit OK');
 
-    return res
-      .status(STATUS.OK)
-      .json({ message: 'Region deleted from database.' });
+    return res.status(STATUS.OK).json({ message: req.t('status.OK') });
   } catch (error) {
     await session.abortTransaction();
     return res
