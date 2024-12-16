@@ -8,6 +8,7 @@ import {
   Prop,
   Ref,
   modelOptions,
+  Index,
 } from '@typegoose/typegoose';
 import lib from '../lib';
 
@@ -22,16 +23,18 @@ class Base extends TimeStamps {
   const user = this as Omit<mongoose.Document, keyof User> & User;
 
   // usuário pode fornecer endereço ou coordenadas. Haverá erro caso forneça ambos ou nenhum.
-  if (
-    (user.address != '' && user.coordinates.length) ||
-    (user.address == '' && !user.coordinates.length)
-  ) {
-    return next(
-      new Error('You must provide either "address" or "coordinates".'),
-    );
+  if (user.isDirectModified('address') || user.isModified('coordinates')) {
+    if (
+      (user.address != '' && user.coordinates.length) ||
+      (user.address == '' && !user.coordinates.length)
+    ) {
+      return next(
+        new Error('You must provide either "address" or "coordinates".'),
+      );
+    }
   }
 
-  // uso de serviço de geolocalização para resolver endereço ↔ coordenadas.
+  // uso de serviço de geolocalização para resolver endereço ↔ coordenadas
   if (user.isModified('coordinates') && user.coordinates.length > 0) {
     user.address = await lib.getAddressFromCoordinates(user.coordinates);
   } else if (user.isModified('address') && user.address != '') {
@@ -67,17 +70,30 @@ export class User extends Base {
 
   if (region.isNew) {
     const user = await UserModel.findOne({ _id: region.user });
-    user.regions.push(region._id);
-    await user.save({ session: region.$session() });
+
+    if (user) {
+      user.regions.push(region._id);
+      await user.save({ session: region.$session() });
+    }
   }
 
   next(region.validateSync());
 })
 @modelOptions({ schemaOptions: { validateBeforeSave: false } })
+@Index({ coordinates: '2dsphere' })
 export class Region extends Base {
-  @Prop({ required: true, auto: true })
   @Prop({ required: true })
   name!: string;
+
+  // coordenadas para GeoJSON
+  @Prop({
+    required: true,
+    type: mongoose.Schema.Types.Mixed,
+  })
+  coordinates!: {
+    type: string;
+    coordinates: number[][][];
+  };
 
   @Prop({ ref: () => User, required: true, type: () => String })
   user: Ref<User>;
