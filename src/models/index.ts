@@ -1,5 +1,4 @@
 import 'reflect-metadata';
-
 import * as mongoose from 'mongoose';
 import { TimeStamps } from '@typegoose/typegoose/lib/defaultClasses';
 import {
@@ -50,6 +49,9 @@ export class User extends Base {
 
   @Prop({ required: true })
   email!: string;
+
+  @Prop({ required: true })
+  password!: string;
 
   @Prop({ required: false })
   address?: string;

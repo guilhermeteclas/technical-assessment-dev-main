@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import STATUS from './utils';
+import { STATUS } from './utils';
 import {
   getUsers,
   getUserById,
@@ -16,6 +16,8 @@ import {
   getNearbyRegions,
   getRegionsWithinPoint,
 } from './controllers/regionController';
+import { LoginController } from './controllers/loginController';
+import { jwtAuth, sessionAuth } from './middlewares/authMiddleware';
 
 const router = Router();
 
@@ -36,7 +38,15 @@ router.delete('/regions/:id', deleteRegion);
 router.get('/nearby', getNearbyRegions);
 router.get('/withinPoint', getRegionsWithinPoint);
 
-router.get('/', async (req, res) => {
+// login
+router.post('/login', LoginController.login);
+router.post('/logout', LoginController.logout);
+
+// routes to test authorization session/jwt
+router.get('/session', sessionAuth, async (req, res) => {
+  return res.status(STATUS.OK).send(req.t('running'));
+});
+router.get('/jwt', jwtAuth, async (req, res) => {
   return res.status(STATUS.OK).send(req.t('running'));
 });
 

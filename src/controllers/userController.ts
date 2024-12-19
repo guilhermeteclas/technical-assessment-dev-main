@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { UserModel } from '../models';
-import STATUS from '../utils';
-import mongoose from 'mongoose';
+import { ENV, STATUS } from '../utils';
+import bcrypt from 'bcryptjs';
 
 export const getUsers = async (req: Request, res: Response) => {
   try {
@@ -47,37 +47,31 @@ export const getUserById = async (req: Request, res: Response) => {
 };
 
 export const createUser = async (req: Request, res: Response) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
-    const { name, email, address, coordinates } = req.body;
+    const { name, email, password, address, coordinates } = req.body;
+    const hashedPassword = await bcrypt.hash(password, ENV.SALT);
 
     const newUser = new UserModel({
       name,
       email,
+      password: hashedPassword,
       address,
       coordinates,
     });
 
     const savedUser = await newUser.save();
-    await session.commitTransaction();
-    console.log('Commit OK');
-    return res.status(STATUS.CREATED).json(savedUser);
+
+    return res
+      .status(STATUS.CREATED)
+      .json({ id: savedUser.id, 'message:': req.t('status.ok') });
   } catch (error) {
-    await session.abortTransaction();
     return res.status(STATUS.INTERNAL_SERVER_ERROR).json({
       message: error.message,
     });
-  } finally {
-    session.endSession();
   }
 };
 
 export const updateUser = async (req: Request, res: Response) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const { id } = req.params;
     const update = req.body;
@@ -93,26 +87,23 @@ export const updateUser = async (req: Request, res: Response) => {
     user.email = update?.email;
     user.address = update?.address;
     user.coordinates = update?.coordinates;
+    user.password = update?.password
+      ? await bcrypt.hash(update.password, ENV.SALT)
+      : user.password;
 
     const updatedUser = await user.save();
-    await session.commitTransaction();
-    console.log('Commit OK');
 
-    return res.status(STATUS.UPDATED).json(updatedUser);
+    return res
+      .status(STATUS.UPDATED)
+      .json({ id: updatedUser.id, 'message:': req.t('status.ok') });
   } catch (error) {
-    await session.abortTransaction();
     return res
       .status(STATUS.INTERNAL_SERVER_ERROR)
       .json({ message: error.message });
-  } finally {
-    session.endSession();
   }
 };
 
 export const deleteUser = async (req: Request, res: Response) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const { id } = req.params;
     const user = await UserModel.findOne({ _id: id });
@@ -124,15 +115,11 @@ export const deleteUser = async (req: Request, res: Response) => {
     }
 
     await user.deleteOne();
-    await session.commitTransaction();
-    console.log('Commit OK');
+
     return res.status(STATUS.OK).json({ message: req.t('status.OK') });
   } catch (error) {
-    await session.abortTransaction();
     return res
       .status(STATUS.INTERNAL_SERVER_ERROR)
       .json({ message: error.message });
-  } finally {
-    session.endSession();
   }
 };

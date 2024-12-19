@@ -2,10 +2,31 @@ import express from 'express'; // Express
 import router from './routes'; // Rotas
 import i18nextMiddleware from 'i18next-http-middleware'; // Internacionalização
 import i18n from './i18n'; // Internacionalização
+import session from 'express-session'; // Session
+import MongoStore from 'connect-mongo'; // Session
+import { ENV } from './utils';
 
 const app = express();
 app.use(express.json());
 app.use(i18nextMiddleware.handle(i18n));
+
+// Session
+app.use(
+  session({
+    secret: ENV.SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: ENV.MONGO_URI,
+      ttl: 24 * 60 * 60,
+    }),
+    cookie: {
+      httpOnly: true,
+      secure: false,
+      maxAge: 14 * 24 * 60 * 60 * 1000,
+    },
+  }),
+);
 
 //routes.ts
 app.use(router);

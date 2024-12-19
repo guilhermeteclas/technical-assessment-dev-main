@@ -2,5 +2,7 @@
     "running": "✅ OZtest está rodando!",
     "welcome": "Bem-vindo à nossa plataforma!",
     "status.not-found": "Não encontrado.",
-    "status.ok": "Tudo certo, querido!"
+    "status.ok": "Tudo certo, querido!",
+    "status.unauthorized": "Não autorizado.",
+    "status.unauthorized.password": "Senha incorreta."
 }

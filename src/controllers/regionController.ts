@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { RegionModel, UserModel } from '../models';
-import STATUS from '../utils';
-import mongoose from 'mongoose';
+import { STATUS } from '../utils';
 
 export const getRegions = async (req: Request, res: Response) => {
   try {
@@ -47,9 +46,6 @@ export const getRegionById = async (req: Request, res: Response) => {
 };
 
 export const createRegion = async (req: Request, res: Response) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const { name, coordinates, userId } = req.body;
 
@@ -67,24 +63,16 @@ export const createRegion = async (req: Request, res: Response) => {
     });
 
     const savedRegion = await newRegion.save();
-    await session.commitTransaction();
-    console.log('Commit OK');
 
     return res.status(STATUS.CREATED).json(savedRegion);
   } catch (error) {
-    await session.abortTransaction();
     return res.status(STATUS.INTERNAL_SERVER_ERROR).json({
       message: error.message,
     });
-  } finally {
-    session.endSession();
   }
 };
 
 export const updateRegion = async (req: Request, res: Response) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const { id } = req.params;
     const update = req.body;
@@ -100,24 +88,16 @@ export const updateRegion = async (req: Request, res: Response) => {
     region.coordinates = update?.coordinates || region.coordinates;
 
     const updatedRegion = await region.save();
-    await session.commitTransaction();
-    console.log('Commit OK');
 
     return res.status(STATUS.UPDATED).json(updatedRegion);
   } catch (error) {
-    await session.abortTransaction();
     return res
       .status(STATUS.INTERNAL_SERVER_ERROR)
       .json({ message: error.message });
-  } finally {
-    session.endSession();
   }
 };
 
 export const deleteRegion = async (req: Request, res: Response) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const { id } = req.params;
     const region = await RegionModel.findById(id);
@@ -129,17 +109,12 @@ export const deleteRegion = async (req: Request, res: Response) => {
     }
 
     await region.deleteOne();
-    await session.commitTransaction();
-    console.log('Commit OK');
 
     return res.status(STATUS.OK).json({ message: req.t('status.OK') });
   } catch (error) {
-    await session.abortTransaction();
     return res
       .status(STATUS.INTERNAL_SERVER_ERROR)
       .json({ message: error.message });
-  } finally {
-    session.endSession();
   }
 };
 
