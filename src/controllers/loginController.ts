@@ -8,6 +8,11 @@ import { ENV } from '../utils';
 
 export class LoginController {
   static async login(req: Request, res: Response) {
+    /**
+     * #swagger.tags = ['Auth']
+     * #swagger.description = ''
+     */
+
     const { email, password } = req.body;
 
     const user = await UserModel.findOne({ email: email }).select('password');
@@ -37,6 +42,10 @@ export class LoginController {
   }
 
   static async logout(req: Request, res: Response) {
+    /**
+     * #swagger.tags = ['Auth']
+     * #swagger.description = ''
+     */
     req.session.destroy((err) => {
       if (err) {
         return res.status(500).json({ message: 'Erro ao finalizar sessão' });

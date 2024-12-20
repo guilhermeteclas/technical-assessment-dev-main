@@ -50,7 +50,7 @@ export class User extends Base {
   @Prop({ required: true })
   email!: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   password!: string;
 
   @Prop({ required: false })

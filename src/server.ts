@@ -4,6 +4,9 @@ import i18nextMiddleware from 'i18next-http-middleware'; // Internacionalizaçã
 import i18n from './i18n'; // Internacionalização
 import session from 'express-session'; // Session
 import MongoStore from 'connect-mongo'; // Session
+import swaggerUi from 'swagger-ui-express'; // api-docs
+import swaggerDocument from './swagger-output.json'; // api-docs
+
 import { ENV } from './utils';
 
 const app = express();
@@ -25,6 +28,15 @@ app.use(
       secure: false,
       maxAge: 14 * 24 * 60 * 60 * 1000,
     },
+  }),
+);
+
+// Swagger
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerDocument, {
+    customSiteTitle: 'OZtest API',
   }),
 );
 

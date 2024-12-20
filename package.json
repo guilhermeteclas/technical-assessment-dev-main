@@ -8,7 +8,8 @@
     "lint": "eslint 'src/**/*.ts'",
     "format": "prettier --write 'src/**/*.ts'",
     "test": "mocha --require ts-node/register ./src/**/*.spec.ts --exit",
-    "build": "tsc"
+    "build": "tsc",
+    "swagger": "node src/swagger.mjs"
   },
   "author": "",
   "license": "ISC",
@@ -16,15 +17,17 @@
     "@faker-js/faker": "^8.1.0",
     "@typegoose/typegoose": "^11.5.0",
     "bcryptjs": "^2.4.3",
-    "chai": "^4.3.10",
     "connect-mongo": "^5.1.0",
-    "express": "^4.18.2",
+    "express": "^4.21.2",
     "express-session": "^1.18.1",
     "i18next": "^24.1.0",
     "i18next-fs-backend": "^2.6.0",
     "i18next-http-middleware": "^3.7.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^7.5.3"
+    "mongoose": "^7.5.3",
+    "swagger-autogen": "^2.23.7",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
