@@ -1,0 +1,8 @@
+{
+    "running": "OZtest is running!",
+    "welcome": "Welcome to OZtest!",
+    "status.not-found": "Not found.",
+    "status.ok": "Successfully",
+    "status.unauthorized": "Not authorized.",
+    "status.unauthorized.password": "Password is wrong"
+}

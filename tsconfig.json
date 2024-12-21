@@ -6,7 +6,9 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "sourceMap": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "resolveJsonModule": true,
+    "typeRoots": ["node_modules/@types", "./src/types"]
   },
   "types": ["reflect-metadata", "mocha"],
   "exclude": ["node_modules"]

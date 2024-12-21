@@ -9,7 +9,7 @@ import { expect, assert } from 'chai';
 import './database';
 import { Region, RegionModel, UserModel } from './models';
 import GeoLib from './lib';
-import server from './http/server';
+import server from './server';
 
 describe('Models', () => {
   let user;
@@ -59,6 +59,10 @@ describe('Models', () => {
       const regionData: Omit<Region, '_id'> = {
         user: user._id,
         name: faker.person.fullName(),
+        coordinates: {
+          type: '',
+          coordinates: [],
+        },
       };
 
       const [region] = await RegionModel.create([regionData]);

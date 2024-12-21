@@ -1,0 +1,558 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "OZtest API Documentation",
+    "version": "1.0.0",
+    "description": "Documentação completa da API."
+  },
+  "host": "localhost:3333",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "Users"
+    },
+    {
+      "name": "Regions"
+    },
+    {
+      "name": "Auth"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/nearby": {
+      "get": {
+        "tags": [
+          "Regions"
+        ],
+        "description": "List regions at a certain distance from a point,with the option to filter regions not belonging to the user who made the request.",
+        "parameters": [
+          {
+            "name": "latitude",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "longitude",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "maxDistance",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "exclude",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Region founded"
+          },
+          "400": {
+            "description": "Latitude and longitude are required."
+          }
+        }
+      }
+    },
+    "/withinPoint": {
+      "get": {
+        "tags": [
+          "Regions"
+        ],
+        "description": "Search for the region that has the specified point",
+        "parameters": [
+          {
+            "name": "latitude",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "longitude",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Region founded"
+          },
+          "400": {
+            "description": "Latitude and longitude are required."
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "any"
+                },
+                "password": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/session": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Test session authorization (cookie)",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/jwt": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Test JWT authorization",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/users/": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Fetch all users",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Create a new user. Address and coordinates may be provided. There will be an error if you provide both or neither.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Some description...",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "John Doe"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "johndoe@example.com"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "securepassword123"
+                },
+                "address": {
+                  "type": "string",
+                  "example": "R. Jerônimo Coelho, 60 - Centro, Florianópolis - SC"
+                },
+                "coordinates": {
+                  "type": "array",
+                  "example": [
+                    -27.5973289,
+                    -48.553059956317256
+                  ],
+                  "items": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Find user by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "User not founded in database"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Update a user. Address and coordinates may be provided. There will be an error if you provide both or neither.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Some description...",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "John Doe"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "johndoe@example.com"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "securepassword123"
+                },
+                "address": {
+                  "type": "string",
+                  "example": "R. Jerônimo Coelho, 60 - Centro, Florianópolis - SC"
+                },
+                "coordinates": {
+                  "type": "array",
+                  "example": [
+                    -27.5973289,
+                    -48.553059956317256
+                  ],
+                  "items": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "User not founded in database"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Remove a user",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted"
+          },
+          "400": {
+            "description": "User not founded in database"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/regions/": {
+      "get": {
+        "tags": [
+          "Regions"
+        ],
+        "description": "Fetch all regions",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Regions"
+        ],
+        "description": "Create a new region",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Add this points to coordinates: [-48.65636129787703, -27.62967416516865],   [-48.65636129787703, -27.637038989898578],   [-48.643176809921385, -27.637038989898578],   [-48.643176809921385, -27.62967416516865],   [-48.65636129787703, -27.62967416516865]",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "Ponte do Imaruim"
+                },
+                "userId": {
+                  "type": "string",
+                  "example": "675f6e4c24ca512dc0f6ae4e"
+                },
+                "coordinates": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "Polygon"
+                    },
+                    "coordinates": {
+                      "type": "array",
+                      "example": [],
+                      "items": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/regions/{id}": {
+      "get": {
+        "tags": [
+          "Regions"
+        ],
+        "description": "Find region by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Region not founded in database"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Regions"
+        ],
+        "description": "Delete a region",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Add this points to coordinates: [-48.65636129787703, -27.62967416516865],   [-48.65636129787703, -27.637038989898578],   [-48.643176809921385, -27.637038989898578],   [-48.643176809921385, -27.62967416516865],   [-48.65636129787703, -27.62967416516865]",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "Ponte do Imaruim"
+                },
+                "userId": {
+                  "type": "string",
+                  "example": "675f6e4c24ca512dc0f6ae4e"
+                },
+                "coordinates": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "Polygon"
+                    },
+                    "coordinates": {
+                      "type": "array",
+                      "example": [],
+                      "items": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Region not founded in database"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Regions"
+        ],
+        "description": "Remove a region",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Region deleted"
+          },
+          "400": {
+            "description": "Region not founded in database"
+          }
+        }
+      }
+    }
+  }
+}
